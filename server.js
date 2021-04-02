@@ -15,5 +15,5 @@ app.get('/two.js', (req, res) => {
 })
 
 app.listen(port, () => {
-	console.log(`listening at http://localhost${port}`);
+	console.log(`listening at http://localhost:${port}`);
 })
