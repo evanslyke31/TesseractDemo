@@ -134,6 +134,7 @@ class Tesseract {
         this.x = x;
         this.y = y;
         this.smoothingPos = 0;
+        
         this.points = [
             new Point(size, size, size, size, radius),      //0  1111
             new Point(size, size, size, -size, radius),     //1  1110
@@ -205,10 +206,11 @@ class Tesseract {
     }
 
     update() {
+       
         this.points.forEach(point => {
-            //point.setMatrix(rotateZ(point.toMatrix(), -.002));
+            point.setMatrix(rotateZ(point.toMatrix(), -.002));
             point.setMatrix(rotateX(point.toMatrix(), -.005));
-            point.setMatrix(rotateZW(point.toMatrix(), -.003));
+            //point.setMatrix(rotateZW(point.toMatrix(), -.003));
             //point.setMatrix(rotateYW(point.toMatrix(), .005));
             //point.setMatrix(rotateXW(point.toMatrix(), -.015));
             if(uploading) { 
@@ -242,8 +244,9 @@ class Point {
     update() {
         //var projected = this.toMatrix();//matMul(projectionMatrix3D(1/(2-this.w)),this.toMatrix());
         //var projected = matMul(projectionMatrix2D(1/(2-this.z),this.toMatrix()));
-        this.circle.position.x = (this.x /(1-(.002*this.z)) + tesseract.x);
-        this.circle.position.y = (this.y /(1-(.002*this.z)) + tesseract.y);
+        let z = this.z/(1.3-(.006*this.w));
+        this.circle.position.x = (this.x /(2-(.004*z)) + tesseract.x);
+        this.circle.position.y = (this.y /(2-(.004*z)) + tesseract.y);
     }
 
     toMatrix() {
