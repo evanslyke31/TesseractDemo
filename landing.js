@@ -193,7 +193,7 @@ class Tesseract {
             //point.setMatrix(rotateXW(point.toMatrix(), -.015));
             if(uploading) { 
                 point.setMatrix(rotateXY(point.toMatrix(), .008));
-                point.setMatrix(rotateYZ(point.toMatrix(), -.005));
+                //point.setMatrix(rotateYZ(point.toMatrix(), -.005));
             }
             //point.setMatrix(rotateXZ(point.toMatrix(), -.000001));
             point.update();

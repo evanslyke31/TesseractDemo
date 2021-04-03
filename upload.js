@@ -29,4 +29,5 @@ function handleFiles(files) {
 function uploadFile(file) {
     console.log(file);
     uploading = true;
+    $('.modal').modal('show');
   }
