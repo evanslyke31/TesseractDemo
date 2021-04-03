@@ -2,6 +2,29 @@ var elem = document.getElementById('draw-animation');
 var two = new Two({ width: window.innerWidth, height: window.innerHeight }).appendTo(elem);
 var uploading = false;
 
+function LerpSmooth1D(starting, ending, position, rate, halfSmooth, infinite) {
+    if(infinite || position <= Math.PI * (halfSmooth ? .5 : 1)) {
+        position += rate;
+        return [((Math.sin(position + (1.5 * Math.PI))+1)*((ending-starting)/(halfSmooth ? 1 : 2)) + starting), position];
+    }
+    return [ending, position]
+}
+
+function RGBToHex(r,g,b) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+  
+    if (r.length == 1)
+      r = "0" + r;
+    if (g.length == 1)
+      g = "0" + g;
+    if (b.length == 1)
+      b = "0" + b;
+  
+    return "#" + r + g + b;
+  }
+
 function matMul(A, B) {
     if (A[0].length != B.length)
         return null;
@@ -110,6 +133,7 @@ class Tesseract {
     constructor(x, y, size, radius) {
         this.x = x;
         this.y = y;
+        this.smoothingPos = 0;
         this.points = [
             new Point(size, size, size, size, radius),      //0  1111
             new Point(size, size, size, -size, radius),     //1  1110
@@ -128,6 +152,8 @@ class Tesseract {
             new Point(-size, -size, -size, size, radius),   //14 0001
             new Point(-size, -size, -size, -size, radius),  //15 0000
         ];
+
+        //Hard coded Convex hull
         this.lines = [];
         this.connect(15,7);
         this.connect(15,11);
@@ -172,12 +198,6 @@ class Tesseract {
         this.connect(1,9);
         this.connect(1,5);
         this.connect(1,3);
-
-        // this.lines = [new Line(this.points[15],this.points[0]),new Line(this.points[14],this.points[1]),new Line(this.points[13],this.points[2]),new Line(this.points[12],this.points[3]),new Line(this.points[11],this.points[4]),new Line(this.points[10],this.points[5]),new Line(this.points[9],this.points[6]),new Line(this.points[8],this.points[7])];
-        // this.lines2 = [new Line(this.points[0],this.points[2]),new Line(this.points[15],this.points[13]),new Line(this.points[4],this.points[6]),new Line(this.points[11],this.points[9]),new Line(this.points[8],this.points[10]),new Line(this.points[7],this.points[5]),new Line(this.points[12],this.points[14]),new Line(this.points[3],this.points[1])];
-        // this.lines3 = [new Line(this.points[0],this.points[8]),new Line(this.points[4],this.points[12]),new Line(this.points[6],this.points[14]),new Line(this.points[2],this.points[10]),new Line(this.points[7],this.points[15]),new Line(this.points[5],this.points[13]),new Line(this.points[3],this.points[11]),new Line(this.points[1],this.points[9])];
-        // this.lines4 = [new Line(this.points[9],this.points[13]),new Line(this.points[10],this.points[14]),new Line(this.points[11],this.points[15]),new Line(this.points[8],this.points[12]),new Line(this.points[0],this.points[4]),new Line(this.points[1],this.points[5]),new Line(this.points[2],this.points[6]),new Line(this.points[3],this.points[7])];
-        // this.lines.push(...this.lines2,...this.lines3, ...this.lines4);
     }
 
     connect(i,j) {
@@ -192,7 +212,8 @@ class Tesseract {
             //point.setMatrix(rotateYW(point.toMatrix(), .005));
             //point.setMatrix(rotateXW(point.toMatrix(), -.015));
             if(uploading) { 
-                point.setMatrix(rotateXY(point.toMatrix(), .008));
+                [this.rotationRate, this.smoothingPos] = LerpSmooth1D(0, .008, this.smoothingPos,.001,false,false);
+                point.setMatrix(rotateXY(point.toMatrix(), this.rotationRate));
                 //point.setMatrix(rotateYZ(point.toMatrix(), -.005));
             }
             //point.setMatrix(rotateXZ(point.toMatrix(), -.000001));
@@ -221,10 +242,8 @@ class Point {
     update() {
         //var projected = this.toMatrix();//matMul(projectionMatrix3D(1/(2-this.w)),this.toMatrix());
         //var projected = matMul(projectionMatrix2D(1/(2-this.z),this.toMatrix()));
-        this.circle.position.x = (this.x /(2-(.005*this.z)) + tesseract.x);
-        this.circle.position.y = (this.y /(2-(.005*this.z)) + tesseract.y);
-        //this.x = this.circle.translation.x;
-        //this.y = this.circle.translation.y;
+        this.circle.position.x = (this.x /(1-(.002*this.z)) + tesseract.x);
+        this.circle.position.y = (this.y /(1-(.002*this.z)) + tesseract.y);
     }
 
     toMatrix() {
@@ -255,21 +274,17 @@ class Line {
 	}
 }
 
-var tesseract = new Tesseract(400,200,100, 3);
+var tesseract;
+var test = two.makeCircle(20, 20, 4);
+test.fill = '#FF8000';
 init();
 function init() {
-    tesseract.update();
-    // for (let i = 0; i < 120; i++)
-    //     nodes.push(new Node());
-    // nodes.forEach(node => node.findNeighbors());
-    //var x = new Tesseract(5,3);
+    tesseract = new Tesseract(400,200,100, 3);
 }
+var g = 0;
 two.bind('update', function (frameCount) {
     tesseract.update();
-    //x.points.forEach(point => point.update());
-    //x.points.forEach(point => { point.update() });
-//     // nodes.forEach(node => node.update());
-//     // edges.forEach(edge => edge.update());
+    [test.position.x, g] = LerpSmooth1D(200, 500, g, .01, true, true);
 }).play();
 
 // function resizeCanvas() {
