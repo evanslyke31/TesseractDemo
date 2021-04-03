@@ -244,9 +244,9 @@ class Point {
     update() {
         //var projected = this.toMatrix();//matMul(projectionMatrix3D(1/(2-this.w)),this.toMatrix());
         //var projected = matMul(projectionMatrix2D(1/(2-this.z),this.toMatrix()));
-        let z = this.z/(1.3-(.006*this.w));
-        this.circle.position.x = (this.x /(2-(.004*z)) + tesseract.x);
-        this.circle.position.y = (this.y /(2-(.004*z)) + tesseract.y);
+        let z = (2-(.005*this.w));
+        this.circle.position.x = (this.x /z) + tesseract.x;
+        this.circle.position.y = (this.y /z) + tesseract.y;
     }
 
     toMatrix() {
