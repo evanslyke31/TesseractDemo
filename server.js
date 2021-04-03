@@ -14,6 +14,10 @@ app.get('/two.js', (req, res) => {
 	res.sendfile('two.js');
 })
 
+app.get('/upload.js', (req, res) => {
+	res.sendfile('upload.js');
+})
+
 app.listen(port, () => {
 	console.log(`listening at http://localhost:${port}`);
 })

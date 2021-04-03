@@ -51,6 +51,9 @@
         </nav>
 
         <section id="file-upload">
+            <form class="my-form">
+                <input type="file" id="fileElem" accept=".pdf" onchange="handleFiles(this.files)">
+              </form>
             <div id="draw-animation"></div>
         </section>
 
@@ -64,5 +67,6 @@
 
         <script src="two.js"></script>
         <script src="landing.js"></script>
+        <script src="upload.js"></script>
     </body>
 </html>
