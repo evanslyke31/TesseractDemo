@@ -250,9 +250,9 @@ class Point {
 
     update() {
         //p = 2-(.007*this.w)
-        let perspective = (2-(this.pFactor*this.w));
-        this.circle.position.x = (this.x / perspective) + tesseract.x;
-        this.circle.position.y = (this.y / perspective) + tesseract.y;
+        //let perspective = (2-(.007*this.w));
+        //this.circle.position.x = (this.x / perspective) + tesseract.x;
+        //this.circle.position.y = (this.y / perspective) + tesseract.y;
     }
 
     toMatrix() {
@@ -279,15 +279,17 @@ class Line {
         // this.edge.stroke = '#F00';
         // this.edge.opacity = 1;
         // this.edge.linewidth = 2;
-        this.lineFraction = 20;
+        this.lineFraction = 10;
         this.edges = [];
+        let perspective = (2-(2*this.node1.w));
         for(let i = 0; i < this.lineFraction; i++) {
             var u1,v1,u2,v2;
-            
             [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,this.lineFraction,i)
-            this.edges.push(two.makeLine(u1,v1,u2,v2));
+            var line = two.makeLine(u1,v1,u2,v2);
+            line.linewidth = 3;
+            this.edges.push(line);
         }
-        this.rgb = 0;
+        this.rgb = Math.random() * 1530;
     }
 
     update() {
@@ -298,13 +300,14 @@ class Line {
 
         for(let i = 0; i < this.lineFraction; i++) {
              var u1,v1,u2,v2;
-            [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,this.lineFraction,i);
+             let perspective = (1.5-(this.node1.pFactor*this.node1.w));
+             let perspective1 = (1.5-(this.node2.pFactor*this.node2.w));
+            [u1,v1,u2,v2] = fractionalLine(this.node1.x/perspective,this.node1.y/perspective,this.node2.x/perspective1,this.node2.y/perspective1,this.lineFraction,i);
             this.edges[i].vertices[0].set(u1+tesseract.x,v1+tesseract.y);
             this.edges[i].vertices[1].set(u2+tesseract.x,v2+tesseract.y);
-            this.edges[i].stroke = `rgb(${getRgb(this.rgb*((.1*i+1))).join(',')})`
+            this.edges[i].stroke = `rgb(${getRgb(this.rgb+((15*(i+1)))).join(',')})`
         }
-        this.rgb += 2;
-        this.rgb %= 1530
+        this.rgb += 10;
         //this.edge.vertices[0].set(this.node1.circle.position.x, this.node1.circle.position.y);
         //this.edge.vertices[1].set(this.node2.circle.position.x, this.node2.circle.position.y);
 	}
@@ -315,23 +318,34 @@ var test = two.makeCircle(20, 20, 4);
 test.fill = '#FF8000';
 init();
 function init() {
-    tesseract = new Tesseract(400,200,100, 3);
+    tesseract = new Tesseract(400,200,1, 6);
     
 }
 var g = 0;
 var g2 = Math.PI/2;
 var pFactorPos = 0;
 var pPos = 0;
+var growIn = true;
+var currentSize = 1;
 
 two.bind('update', function (frameCount) {
+    if(currentSize < 150) {
+        tesseract.points.forEach(point => {
+            var m = point.toMatrix()
+            for(let i = 0; i < m.length; i++)
+                m[i][0] *= 1.05;
+            //console.log(point.toMatrix());
+            point.setMatrix(m);
+        });
+        currentSize *= 1.05;
+    }
     tesseract.update();
     [test.position.x, g] = LerpSmooth1D(0, 300, g, .01, false, true);
     [test.position.y, g2] = LerpSmooth1D(0, 300, g2, .01, false, true);
     test.position.x += 250;
     test.position.y += 50;
 
-
-    [pPos, pFactorPos] = LerpSmooth1D(0, .007, pFactorPos, .01, false, true);
+    [pPos, pFactorPos] = LerpSmooth1D(0, .0022, pFactorPos, .01, false, !uploading && currentSize >= 99);
     tesseract.points.forEach(point => point.pFactor = pPos);
 }).play();
 
