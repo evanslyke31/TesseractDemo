@@ -151,6 +151,8 @@ class Tesseract {
         this.y = y;
         this.smoothingPos = 0;
         this.points = [];
+        this.xyFactor = .5;
+        this.xyFactorPos = 0;
 
         for(let i = 0; i < 16; i++) {
             let bin = [...(i >>> 0).toString(2)].map(b => (b==="1"?1:-1));
@@ -213,14 +215,16 @@ class Tesseract {
 
     update() {
        
+        if(this.xyFactor > 0)
+            [this.xyFactor, this.xyFactorPos] = LerpSmooth1D(.5, .007, this.xyFactorPos, .023, false, false)
         this.points.forEach(point => {
-            point.setMatrix(rotateZ(point.toMatrix(), -.002));
+            //spoint.setMatrix(rotateZ(point.toMatrix(), -.002));
             point.setMatrix(rotateX(point.toMatrix(), -.005));
             //point.setMatrix(rotateZW(point.toMatrix(), -.003));
-            //point.setMatrix(rotateYW(point.toMatrix(), .005));
+            point.setMatrix(rotateYW(point.toMatrix(), this.xyFactor));
             //point.setMatrix(rotateXW(point.toMatrix(), -.015));
             if(uploading) { 
-                [this.rotationRate, this.smoothingPos] = LerpSmooth1D(0, .008, this.smoothingPos,.001,false,false);
+                [this.rotationRate, this.smoothingPos] = LerpSmooth1D(0, .1, this.smoothingPos,.001,false,false);
                 point.setMatrix(rotateXY(point.toMatrix(), this.rotationRate));
                 //point.setMatrix(rotateYZ(point.toMatrix(), -.005));
             }
@@ -307,26 +311,23 @@ class Line {
             this.edges[i].vertices[1].set(u2+tesseract.x,v2+tesseract.y);
             this.edges[i].stroke = `rgb(${getRgb(this.rgb+((15*(i+1)))).join(',')})`
         }
-        this.rgb += 10;
+        this.rgb += colorRate;
         //this.edge.vertices[0].set(this.node1.circle.position.x, this.node1.circle.position.y);
         //this.edge.vertices[1].set(this.node2.circle.position.x, this.node2.circle.position.y);
 	}
 }
 
 var tesseract;
-var test = two.makeCircle(20, 20, 4);
-test.fill = '#FF8000';
 init();
 function init() {
     tesseract = new Tesseract(400,200,1, 6);
     
 }
-var g = 0;
-var g2 = Math.PI/2;
 var pFactorPos = 0;
 var pPos = 0;
-var growIn = true;
 var currentSize = 1;
+var colorRate = 10;
+var colorRatePos = 0;
 
 two.bind('update', function (frameCount) {
     if(currentSize < 150) {
@@ -340,10 +341,9 @@ two.bind('update', function (frameCount) {
         currentSize *= 1.05;
     }
     tesseract.update();
-    [test.position.x, g] = LerpSmooth1D(0, 300, g, .01, false, true);
-    [test.position.y, g2] = LerpSmooth1D(0, 300, g2, .01, false, true);
-    test.position.x += 250;
-    test.position.y += 50;
+
+    if(uploading && colorRate < 50)
+    [colorRate, colorRatePos] = LerpSmooth1D(10, 50, colorRatePos, .01, true, false);
 
     [pPos, pFactorPos] = LerpSmooth1D(0, .0022, pFactorPos, .01, false, !uploading && currentSize >= 99);
     tesseract.points.forEach(point => point.pFactor = pPos);
