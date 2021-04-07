@@ -2,6 +2,26 @@ var elem = document.getElementById('draw-animation');
 var two = new Two({ width: window.innerWidth, height: window.innerHeight }).appendTo(elem);
 var uploading = false;
 
+function getRgb(vgal) {
+	if (vgal >= 1530)
+		vgal = (vgal % 1530) + 1;
+	if (vgal <= 0)
+		return [vgal, 0, 0];
+	else if (vgal <= 255)
+		return [255, vgal, 0];
+	else if (vgal <= 510)
+		return [255 - (vgal - 255), 255, 0];
+	else if (vgal <= 765)
+		return [0, 255, vgal - 510];
+	else if (vgal <= 1020)
+		return [0, 255 - (vgal - 765), 255];
+	else if (vgal <= 1275)
+		return [vgal - 1020, 0, 255];
+	else if (vgal <= 1531)
+		return [255, 0, 255 - (vgal - 1275)];
+	return [0, 0, 0];
+}
+
 function LerpSmooth1D(starting, ending, position, rate, halfSmooth, infinite) {
     if(infinite || position <= Math.PI * (halfSmooth ? .5 : 1)) {
         position += rate;
@@ -10,20 +30,16 @@ function LerpSmooth1D(starting, ending, position, rate, halfSmooth, infinite) {
     return [ending, position]
 }
 
-function RGBToHex(r,g,b) {
-    r = r.toString(16);
-    g = g.toString(16);
-    b = b.toString(16);
-  
-    if (r.length == 1)
-      r = "0" + r;
-    if (g.length == 1)
-      g = "0" + g;
-    if (b.length == 1)
-      b = "0" + b;
-  
-    return "#" + r + g + b;
-  }
+//fraction > 0; fraction = N
+//0 <= fpos < fraction; fpos = N
+function fractionalLine(x1,y1,x2,y2,fraction,fpos) {
+    if(fraction <= 0 || fpos < 0 || fpos >= fraction)
+        return [x1,y1,x2,y2];
+
+    let dx = (x2 - x1)/fraction;
+    let dy = (y2 - y1)/fraction;
+    return [dx*fpos+x1,dy*fpos+y1,dx*(fpos+1)+x1,dy*(fpos+1)+y1];
+}
 
 function matMul(A, B) {
     if (A[0].length != B.length)
@@ -134,25 +150,15 @@ class Tesseract {
         this.x = x;
         this.y = y;
         this.smoothingPos = 0;
-        
-        this.points = [
-            new Point(size, size, size, size, radius),      //0  1111
-            new Point(size, size, size, -size, radius),     //1  1110
-            new Point(size, size, -size, size, radius),     //2  1101
-            new Point(size, size, -size, -size, radius),    //3  1100
-            new Point(size, -size, size, size, radius),     //4  1011
-            new Point(size, -size, size, -size, radius),    //5  1010
-            new Point(size, -size, -size, size, radius),    //6  1001
-            new Point(size, -size, -size, -size, radius),   //7  1000
-            new Point(-size, size, size, size, radius),     //8  0111
-            new Point(-size, size, size, -size, radius),    //9  0110
-            new Point(-size, size, -size, size, radius),    //10 0101
-            new Point(-size, size, -size, -size, radius),   //11 0100
-            new Point(-size, -size, size, size, radius),    //12 0011
-            new Point(-size, -size, size, -size, radius),   //13 0010
-            new Point(-size, -size, -size, size, radius),   //14 0001
-            new Point(-size, -size, -size, -size, radius),  //15 0000
-        ];
+        this.points = [];
+
+        for(let i = 0; i < 16; i++) {
+            let bin = [...(i >>> 0).toString(2)].map(b => (b==="1"?1:-1));
+            let length = bin.length;
+            for(let j = 0; j < 4-length; j++)
+                bin = [-1,...bin];
+            this.points.push(new Point(size*bin[0],size*bin[1],size*bin[2],size*bin[3],radius));
+        }
 
         //Hard coded Convex hull
         this.lines = [];
@@ -233,6 +239,7 @@ class Point {
         this.y = y;
         this.z = z;
         this.w = w;
+        this.pFactor = 0;
         this.radius = radius;
 
         this.circle = two.makeCircle(this.x, this.y, this.radius);
@@ -242,11 +249,10 @@ class Point {
     }
 
     update() {
-        //var projected = this.toMatrix();//matMul(projectionMatrix3D(1/(2-this.w)),this.toMatrix());
-        //var projected = matMul(projectionMatrix2D(1/(2-this.z),this.toMatrix()));
-        let z = (2-(.005*this.w));
-        this.circle.position.x = (this.x /z) + tesseract.x;
-        this.circle.position.y = (this.y /z) + tesseract.y;
+        //p = 2-(.007*this.w)
+        let perspective = (2-(this.pFactor*this.w));
+        this.circle.position.x = (this.x / perspective) + tesseract.x;
+        this.circle.position.y = (this.y / perspective) + tesseract.y;
     }
 
     toMatrix() {
@@ -265,15 +271,42 @@ class Line {
     constructor(node1, node2) {
         this.node1 = node1;
         this.node2 = node2;
-        this.edge = two.makeLine(node1.circle.position.x, node1.circle.position.y, node2.circle.position.x, node2.circle.position.y);
-        this.edge.stroke = '#F00';
-        this.edge.opacity = 1;
-        this.edge.linewidth = 2;
+        // var u1,v1,u2,v2;
+        // [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,10,5)
+        // this.edge =two.makeLine(u1,v1,u2,v2);
+
+        //this.edge = two.makeLine(node1.circle.position.x, node1.circle.position.y, node2.circle.position.x, node2.circle.position.y);
+        // this.edge.stroke = '#F00';
+        // this.edge.opacity = 1;
+        // this.edge.linewidth = 2;
+        this.lineFraction = 20;
+        this.edges = [];
+        for(let i = 0; i < this.lineFraction; i++) {
+            var u1,v1,u2,v2;
+            
+            [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,this.lineFraction,i)
+            this.edges.push(two.makeLine(u1,v1,u2,v2));
+        }
+        this.rgb = 0;
     }
 
     update() {
-        this.edge.vertices[0].set(this.node1.circle.position.x, this.node1.circle.position.y);
-        this.edge.vertices[1].set(this.node2.circle.position.x, this.node2.circle.position.y);
+        // var u1,v1,u2,v2;
+        // [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,10,6)
+        // this.edge.vertices[0].set(u1+tesseract.x,v1+tesseract.y);
+        // this.edge.vertices[1].set(u2+tesseract.x,v2+tesseract.y);
+
+        for(let i = 0; i < this.lineFraction; i++) {
+             var u1,v1,u2,v2;
+            [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,this.lineFraction,i);
+            this.edges[i].vertices[0].set(u1+tesseract.x,v1+tesseract.y);
+            this.edges[i].vertices[1].set(u2+tesseract.x,v2+tesseract.y);
+            this.edges[i].stroke = `rgb(${getRgb(this.rgb*((.1*i+1))).join(',')})`
+        }
+        this.rgb += 2;
+        this.rgb %= 1530
+        //this.edge.vertices[0].set(this.node1.circle.position.x, this.node1.circle.position.y);
+        //this.edge.vertices[1].set(this.node2.circle.position.x, this.node2.circle.position.y);
 	}
 }
 
@@ -283,11 +316,23 @@ test.fill = '#FF8000';
 init();
 function init() {
     tesseract = new Tesseract(400,200,100, 3);
+    
 }
 var g = 0;
+var g2 = Math.PI/2;
+var pFactorPos = 0;
+var pPos = 0;
+
 two.bind('update', function (frameCount) {
     tesseract.update();
-    [test.position.x, g] = LerpSmooth1D(200, 500, g, .01, true, true);
+    [test.position.x, g] = LerpSmooth1D(0, 300, g, .01, false, true);
+    [test.position.y, g2] = LerpSmooth1D(0, 300, g2, .01, false, true);
+    test.position.x += 250;
+    test.position.y += 50;
+
+
+    [pPos, pFactorPos] = LerpSmooth1D(0, .007, pFactorPos, .01, false, true);
+    tesseract.points.forEach(point => point.pFactor = pPos);
 }).play();
 
 // function resizeCanvas() {
