@@ -22,128 +22,6 @@ function getRgb(vgal) {
 	return [0, 0, 0];
 }
 
-function LerpSmooth1D(starting, ending, position, rate, halfSmooth, infinite) {
-    if(infinite || position <= Math.PI * (halfSmooth ? .5 : 1)) {
-        position += rate;
-        return [((Math.sin(position + (1.5 * Math.PI))+1)*((ending-starting)/(halfSmooth ? 1 : 2)) + starting), position];
-    }
-    return [ending, position]
-}
-
-//fraction > 0; fraction = N
-//0 <= fpos < fraction; fpos = N
-function fractionalLine(x1,y1,x2,y2,fraction,fpos) {
-    if(fraction <= 0 || fpos < 0 || fpos >= fraction)
-        return [x1,y1,x2,y2];
-
-    let dx = (x2 - x1)/fraction;
-    let dy = (y2 - y1)/fraction;
-    return [dx*fpos+x1,dy*fpos+y1,dx*(fpos+1)+x1,dy*(fpos+1)+y1];
-}
-
-function matMul(A, B) {
-    if (A[0].length != B.length)
-        return null;
-    var X = new Array(A.length);
-    for (var i = 0; i < A.length; i++) {
-        X[i] = new Array(B[0].length);
-        for (var j = 0; j < B[0].length; j++) {
-            var sum = 0;
-            for (var k = 0; k < A[0].length; k++)
-                sum += A[i][k] * B[k][j];
-            X[i][j] = sum;
-        }
-    }
-    return X;
-}
-
-function rotateX(A, angle) {
-    var rotMatrix = [
-        [1, 0, 0,0],
-        [0, Math.cos(angle), -Math.sin(angle),0],
-        [0, Math.sin(angle), Math.cos(angle),0],[0,0,0,1]];
-    return matMul(rotMatrix, A);
-}
-
-function rotateY(A, angle) {
-    var rotMatrix = [
-        [Math.cos(angle), 0, Math.sin(angle)],
-        [0, 1, 0],
-        [-Math.sin(angle), 0, Math.cos(angle)]];
-    return matMul(rotMatrix, A);
-}
-
-function rotateZ(A, angle) {
-    var rotMatrix = [
-        [Math.cos(angle), -Math.sin(angle), 0, 0],
-        [Math.sin(angle), Math.cos(angle), 0, 0],
-        [0, 0, 1, 0], [0, 0, 0, 1]];
-    return matMul(rotMatrix, A);
-}
-
-function rotateZW(A, angle) {
-    var rotationMatrix = [
-        [Math.cos(angle), -Math.sin(angle), 0, 0],
-        [Math.sin(angle), Math.cos(angle), 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-    ]
-    return matMul(rotationMatrix, A);
-}
-
-function rotateYW(A, angle) {
-    var rotationMatrix = [
-        [Math.cos(angle), 0, -Math.sin(angle), 0],
-        [0, 1, 0, 0],
-        [Math.sin(angle), 0, Math.cos(angle), 0],
-        [0, 0, 0, 1],
-    ]
-    return matMul(rotationMatrix, A);
-}
-
-function rotateYZ(A, angle) {
-    var rotationMatrix = [
-        [Math.cos(angle), 0, 0, -Math.sin(angle)],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [Math.sin(angle), 0, 0, Math.cos(angle)],
-    ]
-    return matMul(rotationMatrix, A);
-}
-
-function rotateXW(A, angle) {
-    var rotationMatrix = [
-        [1, 0, 0, 0],
-        [0, Math.cos(angle), -Math.sin(angle), 0],
-        [0, Math.sin(angle), Math.cos(angle), 0],
-        [0, 0, 0, 1],
-    ]
-    return matMul(rotationMatrix, A);
-}
-
-function rotateXZ(A, angle) {
-    var rotationMatrix = [
-        [1, 0, 0, 0],
-        [0, Math.cos(angle), 0, -Math.sin(angle)],
-        [0, 0, 1, 0],
-        [0,  Math.sin(angle), 0, Math.cos(angle)],
-    ]
-    return matMul(rotationMatrix, A);
-}
-
-function rotateXY(A, angle) {
-    var rotationMatrix = [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, Math.cos(angle), -Math.sin(angle)],
-        [0, 0, Math.sin(angle), Math.cos(angle)],
-    ]
-    return matMul(rotationMatrix, A);
-}
-
-var projectionMatrix3D = (w) => [[w,0,0,0],[0,w,0,0],[0,0,w,0]];
-var projectionMatrix2D = (z) => [[z,0,0],[0,z,0]];
-
 class Tesseract {
     
     constructor(x, y, size, radius) {
@@ -218,17 +96,17 @@ class Tesseract {
         if(this.xyFactor > 0)
             [this.xyFactor, this.xyFactorPos] = LerpSmooth1D(.5, .007, this.xyFactorPos, .023, false, false)
         this.points.forEach(point => {
-            //spoint.setMatrix(rotateZ(point.toMatrix(), -.002));
-            point.setMatrix(rotateX(point.toMatrix(), -.005));
-            //point.setMatrix(rotateZW(point.toMatrix(), -.003));
-            point.setMatrix(rotateYW(point.toMatrix(), this.xyFactor));
-            //point.setMatrix(rotateXW(point.toMatrix(), -.015));
+            //spoint.setMatrix(rotateZ4(point.toMatrix(), -.002));
+            point.setMatrix(rotateX4(point.toMatrix(), -.005));
+            //point.setMatrix(rotateZW4(point.toMatrix(), -.003));
+            point.setMatrix(rotateYW4(point.toMatrix(), this.xyFactor));
+            //point.setMatrix(rotateXW4(point.toMatrix(), -.015));
             if(uploading) { 
                 [this.rotationRate, this.smoothingPos] = LerpSmooth1D(0, .1, this.smoothingPos,.001,false,false);
-                point.setMatrix(rotateXY(point.toMatrix(), this.rotationRate));
-                //point.setMatrix(rotateYZ(point.toMatrix(), -.005));
+                point.setMatrix(rotateXY4(point.toMatrix(), this.rotationRate));
+                //point.setMatrix(rotateYZ4(point.toMatrix(), -.005));
             }
-            //point.setMatrix(rotateXZ(point.toMatrix(), -.000001));
+            //point.setMatrix(rotateXZ4(point.toMatrix(), -.000001));
             point.update();
         });
         this.lines.forEach(line => {
@@ -290,7 +168,7 @@ class Line {
             var u1,v1,u2,v2;
             [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,this.lineFraction,i)
             var line = two.makeLine(u1,v1,u2,v2);
-            line.linewidth = 3;
+            line.linewidth = lineThickness;
             this.edges.push(line);
         }
         this.rgb = Math.random() * 1530;
@@ -310,6 +188,7 @@ class Line {
             this.edges[i].vertices[0].set(u1+tesseract.x,v1+tesseract.y);
             this.edges[i].vertices[1].set(u2+tesseract.x,v2+tesseract.y);
             this.edges[i].stroke = `rgb(${getRgb(this.rgb+((15*(i+1)))).join(',')})`
+            this.edges[i].linewidth = lineThickness;
         }
         this.rgb += colorRate;
         //this.edge.vertices[0].set(this.node1.circle.position.x, this.node1.circle.position.y);
@@ -328,6 +207,7 @@ var pPos = 0;
 var currentSize = 1;
 var colorRate = 10;
 var colorRatePos = 0;
+var lineThickness = .5;
 
 two.bind('update', function (frameCount) {
     if(currentSize < 150) {
@@ -335,15 +215,19 @@ two.bind('update', function (frameCount) {
             var m = point.toMatrix()
             for(let i = 0; i < m.length; i++)
                 m[i][0] *= 1.05;
-            //console.log(point.toMatrix());
             point.setMatrix(m);
         });
         currentSize *= 1.05;
     }
+
+    if(lineThickness < 3)
+        lineThickness += .025
+
     tesseract.update();
 
     if(uploading && colorRate < 50)
     [colorRate, colorRatePos] = LerpSmooth1D(10, 50, colorRatePos, .01, true, false);
+
 
     [pPos, pFactorPos] = LerpSmooth1D(0, .0022, pFactorPos, .01, false, !uploading && currentSize >= 99);
     tesseract.points.forEach(point => point.pFactor = pPos);
