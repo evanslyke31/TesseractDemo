@@ -1,6 +1,7 @@
 var elem = document.getElementById('draw-animation');
 var two = new Two({ width: window.innerWidth, height: window.innerHeight }).appendTo(elem);
 var uploading = false;
+var uploadComplete = false;
 
 function getRgb(vgal) {
 	if (vgal >= 1530)
@@ -195,7 +196,10 @@ class Line {
             this.edges[i].stroke = `rgb(${getRgb(this.rgb+((15*(i+1)))).join(',')})`
             this.edges[i].linewidth = lineThickness;
         }
-        this.rgb += colorRate;
+        if(!uploadComplete)
+            this.rgb += colorRate;
+        else if(uploadComplete && this.rgb % 1530 < 530 || this.rgb % 1530 > 600)
+            this.rgb += colorRate;
         //this.edge.vertices[0].set(this.node1.circle.position.x, this.node1.circle.position.y);
         //this.edge.vertices[1].set(this.node2.circle.position.x, this.node2.circle.position.y);
 	}

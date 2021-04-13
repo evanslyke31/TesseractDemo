@@ -21,16 +21,28 @@ function drop(evt) {
 function uploadFile(file) {
     console.log(file);
     uploading = true;
+
+    let formData = new FormData();
+    formData.append('pdf', file);
     fetch('https://localhost:44385/api/PDFCompressor', { // Your POST endpoint
         method: 'POST',
         headers: {
         // Content-Type may need to be completely **omitted**
         // or you may need something
-        "Content-Type": " multipart/form-data"
+        "accept": "*/*"
         },
-        body: file // This is your file object
-    }).then(
-        response => console.log(response.text()) // if the response is a JSON object
+        mode: 'cors',
+        body: formData // This is your file object
+    }).then(response =>  {
+        uploadComplete = true;
+        response.text().then((text) => {
+            var link = document.createElement('a');
+            link.href = text;
+            link.download = "invoice_"+"_" + new Date() + ".pdf";
+            link.click();
+            link.remove()
+        });
+    }
     ).then(
         success => console.log(success) // Handle the success response object
     ).catch(
