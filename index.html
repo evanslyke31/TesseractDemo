@@ -10,8 +10,8 @@
 
         <title>Hello, world!</title>
     </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <body style="background: #0d1117;">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0d1117;">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Tesseract</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -28,17 +28,17 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 Documentation
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <ul class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item text-light" href="#">Action</a></li>
+                                <li><a class="dropdown-item text-light" href="#">Another action</a></li>
                                 <li>
-                                    <hr class="dropdown-divider">
+                                    <hr class="dropdown-divider text-light">
                                 </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><a class="dropdown-item text-light" href="#">Something else here</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                            <a class="nav-link" href="#" tabindex="-1" aria-disabled="true">Pricing</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav d-flex">
@@ -87,6 +87,7 @@
             crossorigin="anonymous"></script>
 
         <script src="two.js"></script>
+        <script src="node_modules\file-saver\dist\FileSaver.min.js"></script>
         <script src="node_modules/linear-alg-lib/index.js"></script>
         <script src="landing.js"></script>
         <script src="upload.js"></script>

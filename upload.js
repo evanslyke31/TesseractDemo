@@ -33,20 +33,7 @@ function uploadFile(file) {
         },
         mode: 'cors',
         body: formData // This is your file object
-    }).then(response =>  {
-        uploadComplete = true;
-        response.text().then((text) => {
-            var link = document.createElement('a');
-            link.href = text;
-            link.download = "invoice_"+"_" + new Date() + ".pdf";
-            link.click();
-            link.remove()
-        });
-    }
-    ).then(
-        success => console.log(success) // Handle the success response object
-    ).catch(
-        error => console.log(error) // Handle the error response object
-    );
+    }).then(response => {uploadComplete = true; return response.blob()})
+    .then(data => window.open(URL.createObjectURL(data)))
     //$('.modal').modal('show');
   }

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "file-saver": "^2.0.5",
     "linear-alg-lib": "^1.0.2"
   }
 }

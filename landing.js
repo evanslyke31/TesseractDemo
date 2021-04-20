@@ -131,7 +131,7 @@ class Point {
         this.radius = radius;
 
         this.circle = two.makeCircle(this.x, this.y, this.radius);
-        //this.circle.fill = '#FF8000';
+        this.circle.opacity = 0;
         //this.circle.stroke = 'orangered'; // Accepts all valid css color
         this.circle.linewidth = 0;
     }
@@ -208,7 +208,8 @@ class Line {
 var tesseract;
 init();
 function init() {
-    tesseract = new Tesseract(400,200,1, 6);
+    console.log(window.innerWidth/2);
+    tesseract = new Tesseract(window.innerWidth/2,250,1, 6);
     
 }
 var pFactorPos = 0;
