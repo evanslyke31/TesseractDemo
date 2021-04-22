@@ -1,0 +1,17 @@
+.primary-color {
+    background: #0d1117;
+}
+
+.secondary-color {
+    background-color:rgb(34, 34, 34);
+    color: #fff;
+}
+
+.secondary-color-gradient {
+background: rgb(17,22,29);
+background: linear-gradient(343deg, rgba(17,22,29,1) 0%, rgba(13,17,23,1) 100%);
+    color: #fff;
+    border-color:#21262d;
+    border-style: solid;
+    border-radius: 1px;
+}

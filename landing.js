@@ -1,5 +1,5 @@
 var elem = document.getElementById('draw-animation');
-var two = new Two({ width: window.innerWidth, height: window.innerHeight }).appendTo(elem);
+var two = new Two({ width: window.innerWidth, height: 500 }).appendTo(elem);
 var uploading = false;
 var uploadComplete = false;
 
