@@ -59,25 +59,38 @@
         </section>
 
         <section id="steps">
-            <div class="row">
-                <div class="col p-3 pt-3 pb-0 m-3 secondary-color-gradient">
+            <div class="row p-3">
+                <div class="col p-3 pt-3 pb-0 m-3 secondary-color-gradient info-box">
                     <h4>Step 1</h4>
                     <p class="px-3">Drag and drop a file into the tesseract to compress it. Files you can compress are most png, jpeg, pdf, and gif.</p>
                 </div>
-                <div class="col p-3 pt-3 pb-0 m-3 secondary-color-gradient">
+                <div class="col p-3 pt-3 pb-0 m-3 secondary-color-gradient info-box">
                     <h4>Step 2</h4>
                     <p class="px-3">Once the tesseract turns green you are ready to click it to begin downloading your compressed file. If the tesseract turns red then you must have uploaded an invalid or corrupt file. See <a href="#">this</a> to trouble shoot.</p>
                 </div>
-                <div class="col p-3 pt-3 pb-0 m-3 secondary-color-gradient">
+                <div class="col p-3 pt-3 pb-0 m-3 secondary-color-gradient info-box">
                     <h4>Step 3</h4>
                     <p class="px-3">Save or open the compressed file.</p>
                 </div>
             </div>
         </section>
 
-        <section id="info">
-            <div id="gears-animation"></div>
+        <section id="api-info">
+            <div id="nodes">
+                <div class="content vertical-center row mx-5">
+                    <div class="col-2">
+                        <img src="postman.svg" class="postman-img" />
+                    </div>
+                    <div class="col-10 text-light px-5">
+                        Tesseract offers a simple to use REST api to compress your media files. Click the postman icon to get started making requests. Click here to set up your free trial.
+                    </div>
+                </div>
+            </div>
         </section>
+
+        <footer>
+            <span class="copyright mx-4 pb-1">Copyright &#169; Tesseract Compressor</span>
+        </footer>
 
         <!-- Modal -->
         <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -112,7 +125,7 @@
         <script src="node_modules\file-saver\dist\FileSaver.min.js"></script>
         <script src="node_modules/linear-alg-lib/index.js"></script>
         <script src="landing.js"></script>
-        <script src="gears.js"></script>
+        <script src="nodes.js"></script>
         <script src="upload.js"></script>
     </body>
 </html>

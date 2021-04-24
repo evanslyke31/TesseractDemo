@@ -24,7 +24,7 @@ function uploadFile(file) {
 
     let formData = new FormData();
     formData.append('pdf', file);
-    fetch('https://localhost:44385/api/PDFCompressor', { // Your POST endpoint
+    fetch('http://192.168.1.6/api/PDFCompressor', { // Your POST endpoint
         method: 'POST',
         headers: {
         // Content-Type may need to be completely **omitted**
