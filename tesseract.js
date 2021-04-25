@@ -132,15 +132,10 @@ class Point {
 
         this.circle = two.makeCircle(this.x, this.y, this.radius);
         this.circle.opacity = 0;
-        //this.circle.stroke = 'orangered'; // Accepts all valid css color
         this.circle.linewidth = 0;
     }
 
     update() {
-        //p = 2-(.007*this.w)
-        //let perspective = (2-(.007*this.w));
-        //this.circle.position.x = (this.x / perspective) + tesseract.x;
-        //this.circle.position.y = (this.y / perspective) + tesseract.y;
     }
 
     toMatrix() {
@@ -159,14 +154,6 @@ class Line {
     constructor(node1, node2) {
         this.node1 = node1;
         this.node2 = node2;
-        // var u1,v1,u2,v2;
-        // [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,10,5)
-        // this.edge =two.makeLine(u1,v1,u2,v2);
-
-        //this.edge = two.makeLine(node1.circle.position.x, node1.circle.position.y, node2.circle.position.x, node2.circle.position.y);
-        // this.edge.stroke = '#F00';
-        // this.edge.opacity = 1;
-        // this.edge.linewidth = 2;
         this.lineFraction = 10;
         this.edges = [];
         let perspective = (2-(2*this.node1.w));
@@ -178,13 +165,10 @@ class Line {
             this.edges.push(line);
         }
         this.rgb = Math.random() * 1530;
+        this.increasing = 1;
     }
 
     update() {
-        // var u1,v1,u2,v2;
-        // [u1,v1,u2,v2] = fractionalLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y,10,6)
-        // this.edge.vertices[0].set(u1+tesseract.x,v1+tesseract.y);
-        // this.edge.vertices[1].set(u2+tesseract.x,v2+tesseract.y);
 
         for(let i = 0; i < this.lineFraction; i++) {
              var u1,v1,u2,v2;
@@ -196,12 +180,15 @@ class Line {
             this.edges[i].stroke = `rgb(${getRgb(this.rgb+((15*(i+1)))).join(',')})`
             this.edges[i].linewidth = lineThickness;
         }
-        if(!uploadComplete)
-            this.rgb += colorRate;
+        if(!uploadComplete) {
+            if(this.rgb % 1530 > 1250)
+                this.increasing = -1;
+            if(this.rgb % 1530 < 700)
+                this.increasing = 1;
+            this.rgb += colorRate * this.increasing;
+        }
         else if(uploadComplete && this.rgb % 1530 < 530 || this.rgb % 1530 > 600)
             this.rgb += colorRate;
-        //this.edge.vertices[0].set(this.node1.circle.position.x, this.node1.circle.position.y);
-        //this.edge.vertices[1].set(this.node2.circle.position.x, this.node2.circle.position.y);
 	}
 }
 
@@ -252,7 +239,6 @@ two.bind('update', function (frameCount) {
         changed = true;
     }
     if(changed) {
-        //console.log(deltaX, deltaY);
         tesseract.rotateX = deltaX;
         tesseract.rotateY = deltaY;
         changed = false;
@@ -263,13 +249,8 @@ two.bind('update', function (frameCount) {
 }).play();
 
 document.addEventListener("dragover", function(e) {
-    // reset the transparency
     [newX,newY] = [e.pageX, e.pageY];
   }, false);
-
-// $('#draw-animation').mousemove(function(e) {
-//     [newX,newY] = [e.pageX, e.pageY];
-// });
 
 // function resizeCanvas() {
 //     two.renderer.setSize(window.innerWidth, window.innerWidth / 1.5);
