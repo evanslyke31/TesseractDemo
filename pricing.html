@@ -41,7 +41,7 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link secondary-text" href="pricing.html" tabindex="-1" aria-disabled="true">Pricing</a>
+                            <a class="nav-link secondary-text" href="#" tabindex="-1" aria-disabled="true">Pricing</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav d-flex">
@@ -53,72 +53,39 @@
             </div>
         </nav>
 
-        <section id="file-upload">
-            <form class="my-form">
-                <input type="file" id="fileElem" hidden accept=".pdf" onchange="handleFiles(this.files)">
-              </form>
-            <div id="draw-animation" style="height:500px"></div>
-        </section>
-
-        <section id="steps">
-            <div class="row p-3">
-                <div class="col p-3 pt-3 pb-0 m-3 info-box">
-                    <h4 class="primary-text">Step 1</h4>
-                    <p class="px-3 secondary-text">Drag and drop a file into the tesseract to compress it. Files you can compress are most png, jpeg, pdf, and gif.</p>
-                </div>
-                <div class="col p-3 pt-3 pb-0 m-3 info-box">
-                    <h4 class="primary-text">Step 2</h4>
-                    <p class="px-3 secondary-text">Once the tesseract turns green you are ready to click it to begin downloading your compressed file. If the tesseract turns red then you must have uploaded an invalid or corrupt file. See <a href="#">this</a> to trouble shoot.</p>
-                </div>
-                <div class="col p-3 pt-3 pb-0 m-3 info-box">
-                    <h4 class="primary-text">Step 3</h4>
-                    <p class="px-3 secondary-text">Save or open the compressed file.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="api-info">
-            <div id="nodes">
-                <div class="content row mx-5">
-                    <div class="col-2">
-                        <img src="postman.svg" class="postman-img" />
-                    </div>
-                    <div class="col-10">
-                        <div class="large-text primary-text text-light">
-                            Tesseract API
+        <section id="plans">
+            <div class="row mx-4">
+                <div class="info-box col m-3">
+                    <div class="plan-title primary-text m-3 m-text">Tier 1</div>
+                    <hr width="93%" class="m-auto">
+                    <div class="plan-item secondary-text m-3 my-4 px-5">2000 requests a day</div>
+                    <hr width="93%" class="m-auto">
+                    <div class="plan-item secondary-text m-3 my-4 px-5">Partial access to compression settings</div>
+                    <div class="row mb-3">
+                        <div class="col price my-auto secondary-text ps-5 s-text">
+                            $5 / month
                         </div>
-                        <div class="secondary-text text-light px-5">
-                            Tesseract offers a simple to use REST api to compress your media files. Click the postman icon to get started making requests. Click here to set up your free trial. The api allows for advanced features for tweaking compression settings.
+                        <div class="col checkout my-auto">
+                            <button class="btn-success float-end secondary-text">Checkout</button>
                         </div>
                     </div>
                 </div>
+                <div class="info-box col m-3">
+                    <div class="plan-title primary-text m-3 m-text">Tier 2</div>
+                    <hr width="93%" class="m-auto">
+                    <div class="plan-item secondary-text m-3 my-4 px-5">10000 requests a day</div>
+                    <hr width="93%" class="m-auto">
+                    <div class="plan-item secondary-text m-3 my-4 px-5">Full access to compression settings</div>
+                </div>
+                <div class="info-box col m-3">
+                    <div class="plan-title primary-text m-3 m-text">Custom</div>
+                    <hr width="93%" class="m-auto">
+                    <div class="plan-item secondary-text m-3 my-4 px-5">Contact Us</div>
+                    <hr width="93%" class="m-auto">
+                    <div class="plan-item secondary-text m-3 my-4 px-5"></div>
+                </div>
             </div>
         </section>
-
-        <footer>
-            <span class="copyright mx-4 pb-1">Copyright &#169; Tesseract Compressor</span>
-        </footer>
-
-        <!-- Modal -->
-        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" onclick="$('.modal').modal('hide')" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
-                <div class="modal-body">
-                ...
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="$('.modal').modal('hide')">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-            </div>
-        </div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
@@ -128,11 +95,7 @@
             integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
             crossorigin="anonymous"></script>
 
-        <script src="two.js"></script>
         <script src="node_modules\file-saver\dist\FileSaver.min.js"></script>
         <script src="node_modules/linear-alg-lib/index.js"></script>
-        <script src="tesseract.js"></script>
-        <script src="nodes.js"></script>
-        <script src="upload.js"></script>
     </body>
 </html>
