@@ -6,6 +6,7 @@ class Node {
         this.node = two.makeCircle(Math.floor(Math.random() * two.width), Math.floor(Math.random() * two.height), 3);
         this.node.fill = '#ccc';
         this.node.opacity = .5;
+        this.node.radius = 2;
         this.node.noStroke();
         this.toNeighbor;
         this.neighborCount = Math.floor(Math.random() * 4 + 5);
@@ -14,9 +15,9 @@ class Node {
         this.ydelta = 0;
         this.isMoving = false;
         this.nextPoint = new Two.Vector();
-        this.lerpFloat = 0.001;
-        this.isLerpIncreasing = true;
         this.points = [];
+        this.xFactorPos = 0;
+        this.yFactorPos = 0;
         this.points.push(new Two.Vector(this.node.position.x, this.node.position.y));
         this.pointCount = Math.floor(Math.random() * 4 + 1);
         for (let i = 0; i < this.pointCount; i++) {
@@ -35,28 +36,17 @@ class Node {
         if (!this.isMoving && Math.random() > .99) {
             this.isMoving = true;
             this.nextPoint = this.points[Math.floor(Math.random() * this.points.length)];
-            /*if (this.node.position.x < 0)
-                this.nextPoint.x = 50;
-            else if (this.node.position.x > two.width)
-                this.nextPoint.x = two.width - 50;
-            if (this.node.position.y < 0)
-                this.nextPoint.y = 50;
-            else if (this.node.position.y > two.height)
-                this.nextPoint.y = two.height - 50;*/
         } else if(this.isMoving) {
-            this.node.translation.lerp(this.nextPoint, this.lerpFloat);
-            if (this.isLerpIncreasing)
-                this.lerpFloat += this.lerpFloat * .1;
-            else
-                this.lerpFloat -= this.lerpFloat * .9;
-            if (this.lerpFloat > 0.5)
-                this.isLerpIncreasing = false;
-            if (!this.isLerpIncreasing  && this.lerpFloat < 1) {
+            let xPos, yPos;
+            [xPos, this.xFactorPos] = LerpSmooth1D(this.node.position.x, this.nextPoint.x, this.xFactorPos, .007, false, false);
+            [yPos, this.yFactorPos] = LerpSmooth1D(this.node.position.y, this.nextPoint.y, this.yFactorPos, .007, false, false);
+            this.node.position.x = xPos;
+            this.node.position.y = yPos;
+            if(this.xFactorPos > .99 && this.yFactorPos > .99) {
                 this.isMoving = false;
-                this.lerpFloat = 0.001;
-                this.isLerpIncreasing = true;
+                this.xFactorPos = 0;
+                this.yFactorPos = 0;
             }
-
 		}
     }
 
@@ -89,7 +79,7 @@ class Edge {
         this.edge = two.makeLine(node1.position.x, node1.position.y, node2.position.x, node2.position.y);
         this.edge.stroke = '#ddd';
         this.edge.opacity = .05;
-        this.edge.linewidth = 2;
+        this.edge.linewidth = 1;
     }
 
     update() {

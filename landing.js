@@ -258,7 +258,7 @@ two.bind('update', function (frameCount) {
         changed = false;
     }
 
-    [pPos, pFactorPos] = LerpSmooth1D(0, .0022, pFactorPos, .01, false, !uploading && currentSize >= 99);
+    [pPos, pFactorPos] = LerpSmooth1D(0, .0022, pFactorPos, .01, false, !uploading);
     tesseract.points.forEach(point => point.pFactor = pPos);
 }).play();
 
