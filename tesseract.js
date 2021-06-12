@@ -1,9 +1,14 @@
 var elem = document.getElementById('draw-animation');
 var two = new Two({ width: window.innerWidth, height: 500 }).appendTo(elem);
 var uploading = false;
+var failed = false;
 var uploadComplete = false;
 
 function getRgb(vgal) {
+    if(failed)
+        return [255,0,0];
+    if(uploadComplete)
+        return [0,255,0];
 	if (vgal >= 1530)
 		vgal = (vgal % 1530) + 1;
 	if (vgal <= 0)

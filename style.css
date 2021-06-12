@@ -73,3 +73,64 @@ section {
 .s-text {
     font-size: 1.25em;
 }
+
+.modal {
+}
+
+.modal-content {
+    min-width: 250px;
+    width: min-content;
+    height: min-content;
+    margin: auto;
+    background-color: #e1e1e1;
+}
+
+.close-download {
+    cursor: pointer;
+    margin-left: 10px;
+    width: min-content;
+    font-size: 25px;
+}
+
+.close-recaptcha {
+    cursor: pointer;
+    margin-left: 10px;
+    width: min-content;
+    font-size: 25px;
+}
+
+#recaptcha {
+    margin: 0px 10px 10px 10px;
+}
+
+#recaptchaModal {
+    opacity: 0;
+}
+
+.compare-img {
+    width: 27vw;
+}
+
+.compare-header {
+    width: 27vw;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2em;
+    
+}
+
+.comparison-text {
+    width: 87vw;
+    margin: auto;
+}
+
+.comparison-title {
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2em;
+}
+
+.comparison-subtext {
+    color: #fff;
+    font-size: 1.2em;
+}
